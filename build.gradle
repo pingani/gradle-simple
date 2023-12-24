@@ -7,7 +7,7 @@ version = '1.0'
 
 sonar {
     properties {
-        property('sonar.projectName', 'Gradle1')
+        property('sonar.projectName', 'Example of SonarScanner for Gradle Usage')
         property("sonar.projectKey", "sonar-scanner-gradle")
         property "sonar.login", "admin"
         property "sonar.password", "admin123"
@@ -15,37 +15,45 @@ sonar {
         property "sonar.tests", "src/test"
     }
 }
-apply plugin: 'java'
-apply plugin: 'maven-publish'
 
-group = 'com.github.jitpack'
-version = '2.0'
-
-sourceCompatibility = 1.8 // java 8
-targetCompatibility = 1.8
-
+// In this section you declare where to find the dependencies of your project
 repositories {
-  mavenCentral()
+    // Use jcenter for resolving your dependencies.
+    // You can declare any Maven/Ivy/file repository here.
+    mavenCentral()
 }
 
 dependencies {
-  implementation 'com.google.guava:guava:29.0-jre'
+    // This dependency is found on compile classpath of this component and consumers.
+    implementation 'com.google.guava:guava:31.1-jre'
+
+    // Use JUnit test framework
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+    implementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+// Apply a specific Java toolchain to ease working on different environments.
 java {
-	withSourcesJar()
-	withJavadocJar()
-}
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-		from components.java
-        }
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
     }
+    sourceSets.main.java.srcDirs = ['src']
 }
 
-wrapper {
-    gradleVersion = "7.3.3"
-    distributionType = Wrapper.DistributionType.ALL
+application {
+    // Define the main class for the application.
+    mainClass='com.acme.App'
+}
+
+test {
+    // Use JUnit Platform for unit tests.
+    useJUnitPlatform()
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
 }
